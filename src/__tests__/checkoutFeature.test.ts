@@ -45,6 +45,15 @@ describe('checkout + idempotency', () => {
     expect(await available('BOOK')).toBe(8);
   });
 
+  it('same key with a DIFFERENT cart -> rejected, no extra stock taken', async () => {
+    await checkout({ lines: [{ sku: 'BOOK', quantity: 1 }], idempotencyKey: 'kx' });
+    await expect(
+      checkout({ lines: [{ sku: 'BOOK', quantity: 2 }], idempotencyKey: 'kx' }),
+    ).rejects.toThrow(/different request/);
+    expect(await available('BOOK')).toBe(9); // only the first order's unit
+    expect((await orderRepo.all()).length).toBe(1);
+  });
+
   it('STRETCH: concurrent same-key checkouts -> exactly one order', async () => {
     const [a, b] = await Promise.all([
       checkout({ lines: [{ sku: 'BOOK', quantity: 2 }], idempotencyKey: 'kc' }),

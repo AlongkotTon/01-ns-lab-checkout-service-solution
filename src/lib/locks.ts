@@ -8,6 +8,13 @@ export function withLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
   const prev = chains.get(key) ?? Promise.resolve();
   const run = prev.catch(() => undefined).then(fn);
   // Park a settled-safe tail so one failure doesn't poison the queue.
-  chains.set(key, run.catch(() => undefined));
+  const tail = run.catch(() => undefined);
+  chains.set(key, tail);
+  // Evict the entry once this tail settles, unless a newer caller has already
+  // queued behind it — otherwise `chains` grows without bound (one entry per
+  // key forever, e.g. every SKU and every idempotency key).
+  void tail.finally(() => {
+    if (chains.get(key) === tail) chains.delete(key);
+  });
   return run;
 }

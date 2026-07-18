@@ -26,6 +26,12 @@ describe('inventoryService', () => {
     await expect(reserve('NOPE', 1)).rejects.toThrow(/unknown sku/);
   });
 
+  it('rejects a non-positive quantity instead of inflating stock', async () => {
+    await expect(reserve('X', 0)).rejects.toThrow(/positive/);
+    await expect(reserve('X', -2)).rejects.toThrow(/positive/);
+    expect(await available('X')).toBe(3); // unchanged, not 3 + 2
+  });
+
   it('CONCURRENCY: two racing reserves of the last unit -> exactly one succeeds', async () => {
     await productRepo.seed([{ sku: 'X', name: 'X', priceCents: 100, stock: 1 }]);
     const results = await Promise.all([reserve('X', 1), reserve('X', 1)]);
