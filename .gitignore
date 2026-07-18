@@ -3,4 +3,3 @@ dist/
 *.log
 coverage/
 .claude/settings.local.json
-.claude/CHEATSHEET.md
