@@ -13,19 +13,24 @@ npm test          # green on a fresh clone
 npm run dev       # http://localhost:3000
 ```
 
+## Auth
+`/products` and `/orders` now require `Authorization: Bearer <token>` header. Obtain a token via `POST /auth/register` then `POST /auth/login` with `{ "username": ..., "password": ... }`. Both accept JSON bodies. `/health` and `/auth/*` routes are public.
+
 ## Layout
 ```
 src/
 ├── lib/money.ts            integer-cents math      (tested)
 ├── lib/clock.ts            injectable clock (for coupon expiry)
-├── repositories/           async in-memory stores (product, order)
+├── lib/password.ts         scrypt hash/verify      (tested)
+├── repositories/           async in-memory stores (product, order, user, session)
 ├── services/
 │   ├── pricingService.ts   subtotal, tax, discount (tested)
 │   ├── inventoryService.ts reserve/release stock   (NO tests — QA track)
 │   ├── couponService.ts    coupon -> discount      (STUB — Dev track)
+│   ├── authService.ts      register/login/token TTL (tested)
 │   └── orderService.ts     checkout orchestration  (Dev extends)
 ├── routes/ · middleware/ · app.ts · index.ts
-└── __tests__/              money, pricing, order   (green)
+└── __tests__/              money, pricing, order, auth (green)
 ```
 
 ## Assignments
