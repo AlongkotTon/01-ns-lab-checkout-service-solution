@@ -19,6 +19,7 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-commit.sh",
+            "if": "Bash(*git commit*)",
             "timeout": 120,
             "statusMessage": "Checking types before commit..."
           }
