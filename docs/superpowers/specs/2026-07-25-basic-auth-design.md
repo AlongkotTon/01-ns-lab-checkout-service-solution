@@ -10,7 +10,8 @@ and log in via new `/auth` endpoints; login issues an opaque bearer token with a
 1-hour TTL; all routes except `/health` and `/auth` require a valid token.
 
 Zero new dependencies (runtime or dev): hashing uses `node:crypto`, tokens use
-`crypto.randomBytes`, and the integration test uses Node's built-in `fetch`.
+`crypto.randomBytes`, and the integration test uses `supertest`, which is
+already a devDependency.
 
 ## Architecture
 
@@ -130,8 +131,8 @@ Repos are reset with `seed([])` in `beforeEach`, matching existing tests.
 
 ### Integration — `src/__tests__/authFeature.test.ts`
 
-Starts the real app on an ephemeral port (`createApp()` + `app.listen(0)`,
-closed in `afterAll`) and calls it with built-in `fetch`:
+Builds the real app with `createApp()` and calls it with `supertest` (already
+a devDependency):
 
 - `GET /health` without a token → 200.
 - `GET /products` without a token → 401.
