@@ -44,7 +44,26 @@ Known quirk found while running: invoking the skill through the Skill tool does 
 
 ## 3. `/delivery` (chains ship → review-pr)
 
-**Result: recorded in the follow-up section below** — this report file itself is the change that phase 1 ships.
+**Result: ✅ full chain completed** — this report file itself was the change that phase 1 shipped.
+
+**Phase 1 (ship):** diff = `docs/skill-run-report.md` (this file) · review clean · `npm test` **29/29 pass** · committed `3ca5eed` and pushed. The branch already had an open PR, so the existing fork PR [#1](https://github.com/AlongkotTon/01-ns-lab-checkout-service-solution/pull/1) was reused instead of `gh pr create` (which would fail with "PR already exists") → PR number carried to phase 2 = **1**.
+
+**Phase 2 (review-pr 1):** live diff fetched via `gh pr diff 1` — 10 files, all Lab A team tooling (3 skills, 2 hooks, settings.json, checklist, this report, prettier devDependency).
+
+| Item | Verdict | Evidence |
+|---|---|---|
+| C1 money integer cents | — n/a | No runtime/money code touched |
+| C2 edge cases tested | ✅ pass* | Hooks verified by stdin pipe-tests (3 guard cases + format fix) and one live in-session firing each; *no automated tests — see note |
+| C3 error handling | ✅ pass | `guard-commit.sh` fails loud: exit 2 + reason on stderr; `format.sh` never blocks (`|| true`) |
+| C4 no secrets | ✅ pass | Hooks/settings contain no credentials; `.env` reads remain denied in `settings.local.json` |
+| C5 input validated | ✅ pass | Hooks bail on empty `file_path` / non-`git commit` commands before doing work |
+| C6 conventions | ✅ pass | Skills follow `.claude/skills/<name>/SKILL.md`; checklist under `docs/` |
+| C7 no `any`/`console.log` | — n/a | No TS changes |
+| C8 commit messages | ✅ pass | 5 descriptive commits (what + why) |
+
+**Verdict: APPROVE** — note: hook behavior is only covered by manual pipe-tests documented here; if the team wants regression coverage, wrap them in a small bats/jest shell test.
+
+**Final summary:** PR https://github.com/AlongkotTon/01-ns-lab-checkout-service-solution/pull/1 · tests 29/29 green · review APPROVE · nothing blocking merge.
 
 ---
 
