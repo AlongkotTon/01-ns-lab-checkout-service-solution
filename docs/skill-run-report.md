@@ -71,3 +71,25 @@ Known quirk found while running: invoking the skill through the Skill tool does 
 
 - **format.sh (PostToolUse)** — fired on every Edit/Write of TS/JS files; verified live: a deliberately misformatted file was rewritten by prettier immediately after `Write`.
 - **guard-commit.sh (PreToolUse)** — runs `tsc --noEmit` before every `git commit`; green commits pass silently, a planted type error blocked the commit with the error text fed back for auto-fix.
+
+---
+
+## Follow-up hardening & verification (same day, after the skill runs)
+
+**Live in-session block of a real `git commit`** — planted `src/__guard_demo__.ts` with a type error, then issued an actual `git commit` through the Bash tool. The PreToolUse hook blocked the call *before it executed*, returning the exact `tsc` error on stderr. No commit was created. This is the Lab pass-criterion for tool #4 demonstrated end to end.
+
+**Matcher scoping with `if`** — added `"if": "Bash(*git commit*)"` to the guard hook entry in `.claude/settings.json` and verified empirically (type error planted, hook must fire to block):
+
+| Case | Command shape | Result |
+|---|---|---|
+| A | `git commit -m ...` (command starts with it) | ✅ hook fired → blocked |
+| B | `echo ... && git commit -m ...` (mid-compound) | ✅ hook fired → blocked |
+
+Conclusion: the `if` filter supports leading **and** trailing wildcards, so the guard script now only spawns for commands containing `git commit` (cheaper than bare matcher `Bash`), while the script's internal `case` filter remains as a backstop.
+
+**Hook documentation** — both scripts now carry WHAT / HOW / TEST-BY-HAND header blocks describing the stdin JSON contract and the exit-code semantics (`format.sh` always exits 0 — a formatter must never block; `guard-commit.sh` exits 2 to block with the reason on stderr). Committed as `e633c4c`.
+
+## PR status
+
+- Upstream submission: **Neversitup-Software PR [#4](https://github.com/Neversitup-Software/01-ns-lab-checkout-service-solution/pull/4)** (base `main` ← `AlongkotTon:add-ship-skill`) — the single PR of record for Lab A.
+- Fork PR #1 — closed as superseded by #4 (same branch; was used for the skill test runs documented above).
