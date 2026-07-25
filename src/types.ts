@@ -13,7 +13,7 @@ export interface CartLine {
   quantity: number;
 }
 
-export type CouponType = 'percent' | 'fixed';
+export type CouponType = "percent" | "fixed";
 
 export interface Coupon {
   code: string;
@@ -36,4 +36,15 @@ export interface Order {
   breakdown: PriceBreakdown;
   couponCode: string | null;
   createdAt: string;
+}
+
+export interface User {
+  username: string;
+  passwordHash: string; // "salt:hash" produced by lib/password.ts
+}
+
+export interface Session {
+  token: string;
+  username: string;
+  expiresAt: string; // ISO timestamp, same convention as Coupon.expiresAt
 }
