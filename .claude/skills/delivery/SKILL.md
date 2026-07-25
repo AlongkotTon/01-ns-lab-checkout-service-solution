@@ -1,23 +1,23 @@
 ---
 name: delivery
-description: ส่งงานครบวงจร — chain /ship (review → test → commit → เปิด PR) แล้วต่อด้วย /review-pr รีวิว PR ที่เพิ่งเปิดด้วย checklist ทีมทันที
+description: End-to-end delivery — chain /ship (review → test → commit → open PR) then immediately /review-pr the newly opened PR against the team checklist
 allowed-tools: Skill, Read, Grep, Glob, Bash(npm test:*), Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(gh pr create:*), Bash(gh pr view:*), Bash(gh pr diff:*)
 argument-hint: [pr-title]
 ---
 
-ทำ 2 เฟสต่อกันตามลำดับ ห้ามข้ามเฟส และห้ามเข้าเฟส 2 ถ้าเฟส 1 ไม่จบ:
+Run these 2 phases in order. Do not skip a phase, and do not enter phase 2 unless phase 1 completed:
 
-## เฟส 1 — Ship
+## Phase 1 — Ship
 
-เรียก skill `ship` โดยส่งชื่อ PR "$1" ต่อให้ (ถ้าไม่ให้มา ให้ ship ตั้งจาก diff เอง) แล้วทำตามขั้นตอนของ ship ให้ครบทั้ง 5 ขั้น
+Invoke the `ship` skill, passing the PR title "$1" along (if not provided, let ship derive one from the diff), and complete all 5 of ship's steps.
 
-- ถ้า ship หยุดกลางทาง (เทสต์แดง / ไม่มีอะไรให้ commit) → **จบเลย** รายงานสาเหตุ ห้ามเข้าเฟส 2
-- ถ้าจบสำเร็จ → จดเลข PR จาก URL ที่ `gh pr create` คืนมา (เช่น `.../pull/7` → เลข 7)
+- If ship stops midway (tests red / nothing to commit) → **stop here**, report the cause, do NOT enter phase 2
+- If it completes → note the PR number from the URL returned by `gh pr create` (e.g. `.../pull/7` → number 7)
 
-## เฟส 2 — Review
+## Phase 2 — Review
 
-เรียก skill `review-pr` ด้วยเลข PR ที่ได้จากเฟส 1 แล้วรีวิวตาม checklist ทีมให้ครบทุกข้อ
+Invoke the `review-pr` skill with the PR number from phase 1 and complete the full team-checklist review.
 
-## สรุปท้าย
+## Final summary
 
-รายงานรวบยอด: ลิงก์ PR · ผลเทสต์ · verdict จากรีวิว (APPROVE / REQUEST CHANGES) · ถ้ามีข้อไม่ผ่าน ให้ลิสต์สิ่งที่ต้องแก้ก่อน merge
+Report overall: PR link · test results · review verdict (APPROVE / REQUEST CHANGES) · if any items failed, list what must be fixed before merge

@@ -1,24 +1,24 @@
 ---
 name: review-pr
-description: รีวิว PR ตามหมายเลขที่ระบุ โดยไล่ตาม review checklist ของทีม
+description: Review a PR by number, going through the team's review checklist item by item
 allowed-tools: Read, Grep, Glob, Bash(gh pr view:*), Bash(gh pr diff:*)
 argument-hint: <pr-number>
 ---
 
-รีวิว PR #$1 ของ repo นี้
+Review PR #$1 of this repo
 
-## Diff ของ PR (ดึงสด)
+## PR diff (fetched live)
 
 !`gh pr diff $1`
 
-## Checklist ของทีม
+## Team checklist
 
 @docs/review-checklist.md
 
-## วิธีรีวิว
+## How to review
 
-1. อ่าน diff ข้างบนให้ครบทุกไฟล์ ถ้าต้องดู context เพิ่ม ให้ Read ไฟล์จริงใน repo ประกอบ
-2. ไล่ checklist ทีละข้อ (C1–C8) — ทุกข้อต้องระบุว่า **ผ่าน / ไม่ผ่าน / ไม่เกี่ยวกับ PR นี้** พร้อมอ้างไฟล์:บรรทัดจาก diff เป็นหลักฐาน
-3. สรุปท้ายรีวิว:
-   - รายการข้อที่ไม่ผ่าน พร้อมข้อเสนอวิธีแก้
-   - verdict: **APPROVE** (ผ่านทุกข้อ) หรือ **REQUEST CHANGES** (มีข้อไม่ผ่าน)
+1. Read the diff above across every file. If more context is needed, Read the actual files in the repo.
+2. Go through the checklist item by item (C1–C8) — for every item state **pass / fail / not applicable to this PR**, citing file:line from the diff as evidence.
+3. End the review with:
+   - A list of failing items with suggested fixes
+   - Verdict: **APPROVE** (all items pass) or **REQUEST CHANGES** (any item fails)
