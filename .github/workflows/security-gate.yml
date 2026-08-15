@@ -54,7 +54,10 @@ jobs:
 
       - name: บล็อกเมื่อเจอ HIGH หรือ CRITICAL
         run: |
-          if grep -qE '^(HIGH|CRITICAL)' /tmp/security.md; then
+          # Match a HIGH/CRITICAL severity that opens a finding, tolerating leading
+          # markdown/list markers (**, -, #, >, whitespace) and case, so a finding
+          # rendered as "**CRITICAL — file:line**" is not silently let through.
+          if grep -qiE '^[[:space:]*_#>-]*(HIGH|CRITICAL)\b' /tmp/security.md; then
             echo "::error::security review พบช่องโหว่ระดับ HIGH ขึ้นไป — merge ไม่ได้"
             exit 1
           fi
