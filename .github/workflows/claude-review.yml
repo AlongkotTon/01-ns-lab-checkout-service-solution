@@ -45,7 +45,7 @@ jobs:
           } | claude -p \
             --disallowedTools "Bash" "Edit" "Write" "WebFetch" "WebSearch" "Task" \
             --output-format json \
-            --max-budget-usd 0.50 > /tmp/review.json
+            --max-budget-usd 1.00 > /tmp/review.json
 
           # Fail closed if the review did not actually produce a result.
           if ! jq -e '.result // empty | select(. != "")' /tmp/review.json > /dev/null 2>&1; then
