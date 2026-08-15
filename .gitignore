@@ -3,3 +3,6 @@ dist/
 *.log
 coverage/
 .claude/settings.local.json
+day4-lab-student/
+.env
+.DS_Store

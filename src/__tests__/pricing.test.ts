@@ -21,6 +21,16 @@ describe('pricingService', () => {
     await expect(computeSubtotal([{ sku: 'BOOK', quantity: 0 }])).rejects.toThrow(/positive/);
   });
 
+  it('rejects a missing/NaN quantity instead of producing NaN', async () => {
+    await expect(
+      computeSubtotal([{ sku: 'BOOK' } as unknown as { sku: string; quantity: number }]),
+    ).rejects.toThrow(/positive integer/);
+  });
+
+  it('rejects a fractional quantity', async () => {
+    await expect(computeSubtotal([{ sku: 'BOOK', quantity: 1.5 }])).rejects.toThrow(/positive integer/);
+  });
+
   it('taxes at 7%', () => {
     expect(taxOf(3750)).toBe(263); // 262.5 -> 263
   });
