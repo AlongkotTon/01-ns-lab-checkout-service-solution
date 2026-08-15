@@ -6,7 +6,9 @@ const TAX_BPS = 700; // 7.00% expressed in basis points
 export async function computeSubtotal(lines: CartLine[]): Promise<number> {
   let subtotal = 0;
   for (const line of lines) {
-    if (line.quantity <= 0) throw new Error(`quantity must be positive for ${line.sku}`);
+    if (!Number.isInteger(line.quantity) || line.quantity <= 0) {
+      throw new Error(`quantity must be a positive integer for ${line.sku}`);
+    }
     const product = await productRepo.get(line.sku);
     if (!product) throw new Error(`unknown sku: ${line.sku}`);
     subtotal += product.priceCents * line.quantity;
